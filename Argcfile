@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# @describe Development automation script
+# @version 1.0.0
+
+# @cmd Install all dependencies and setup git hooks
+install() {
+    git init
+    uv sync
+    uv run pre-commit install
+}
+
+# @cmd Run the application
+run() {
+    uv run python -m app.main
+}
+
+# @cmd Watch for changes and auto-run
+watch() {
+    watchexec -e py "argc run"
+}
+
+# @cmd Run all checks (lint, type-check, test)
+check() {
+    lint
+    type-check
+    test
+}
+
+# @cmd Lint and format check
+lint() {
+    uv run ruff check .
+    uv run ruff format --check .
+}
+
+# @cmd Fix linting issues
+fix() {
+    uv run ruff check --fix .
+    uv run ruff format .
+}
+
+# @cmd Type checking with mypy
+type-check() {
+    uv run mypy .
+}
+
+# @cmd Run tests
+test() {
+    uv run pytest -n auto
+}
+
+# @cmd Run tests against various Python versions
+test-all() {
+    set -e
+    VIRTUAL_ENV=.venv-311 uv run --active --python 3.11 pytest -n auto
+    VIRTUAL_ENV=.venv-312 uv run --active --python 3.12 pytest -n auto
+    VIRTUAL_ENV=.venv-313 uv run --active --python 3.13 pytest -n auto
+    echo "🎉 All Python versions tested!"
+}
+
+# @cmd Run tests against various Python versions in parallel
+test-all-parallel() {
+    set -e
+    VIRTUAL_ENV=.venv-311 uv run --active --python 3.11 pytest -n 4 &
+    VIRTUAL_ENV=.venv-312 uv run --active --python 3.12 pytest -n 4 &
+    VIRTUAL_ENV=.venv-313 uv run --active --python 3.13 pytest -n 4 &
+    wait
+    echo "🎉 All Python versions tested!"
+}
+
+# @cmd Test with coverage report
+test-cov() {
+    uv run pytest --cov=src --cov-report=html
+}
+
+# @cmd Run security checks with bandit
+security() {
+    uv run bandit -r src/
+}
+
+# @cmd Audit dependencies for vulnerabilities
+audit() {
+    uv run pip-audit
+}
+
+# @cmd Clean only gitignored files
+clean() {
+    git clean -fXd
+}
+
+# @cmd Preview what would be cleaned
+clean-preview() {
+    git clean -fXd --dry-run
+}
+
+eval "$(argc --argc-eval "$0" "$@")"

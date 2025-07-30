@@ -1,0 +1,40 @@
+# Python-generated files
+**__pycache__**/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.venv-*
+
+# Caches
+*_cache/
+
+# Git and development files
+.git
+.gitignore
+# README.md
+*.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker files (don't copy into image)
+Dockerfile
+.dockerignore
